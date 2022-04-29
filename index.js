@@ -33,13 +33,13 @@ app.post('/createProfile', (req, res) => {
 
 })
 app.post('/Login', (req, res) => {
-	const Contact= req.body.Contact;
+	const Contact = req.body.Contact;
 	db.query(`SELECT Contact,password FROM userprofile WHERE Contact=${Contact}`, (err, result) => {
-		if(result.length===0) {
+		if (result.length === 0) {
 			res.send("invalid Credentials")
 		}
 		else {
-			res.send({result,message:"User Credentials"})
+			res.send({ result, message: "User Credentials" })
 		}
 	})
 })
@@ -76,7 +76,7 @@ app.get("/myorders", (req, res) => {
 		if (err) {
 			console.log(err);
 		} else {
-			res.send({result,message:"you're booked appointments",success:true});
+			res.send({ result, message: "you're booked appointments", success: true });
 		}
 	});
 });
@@ -100,8 +100,6 @@ app.put("/Accept", (req, res) => {
 		}
 	});
 });
-
-
 const PORT = 3001;
 app.listen(PORT, () => {
 	console.log(`server is running at ${PORT}`);
