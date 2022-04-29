@@ -16,11 +16,30 @@ app.post('/createProfile', (req, res) => {
 	const Age = req.body.Age
 	const Contact = req.body.Contact
 	const password = req.body.password
-	db.query('INSERT INTO userprofile(Last_Name,First_Name,Age,Contact,password) VALUES(?,?,?,?,?)', [Last_Name, First_Name, Age, Contact, password], (err, result) => {
-		if (err) {
-			console.log(err);
-		} else {
-			res.send("Profile Created Successfully")
+	db.query(`SELECT Contact FROM userprofile WHERE Contact = ${Contact}`, (err, result) => {
+		if (result.length === 0) {
+			db.query('INSERT INTO userprofile(Last_Name,First_Name,Age,Contact,password) VALUES(?,?,?,?,?)', [Last_Name, First_Name, Age, Contact, password], (err, result) => {
+				if (err) {
+					console.log(err);
+				} else {
+					res.send("Profile Created Successfully")
+				}
+			})
+		}
+		else {
+			res.send({ success: true, userExist: true, message: "user already exist ,please redirect login page" })
+		}
+	})
+
+})
+app.post('/Login', (req, res) => {
+	const Contact= req.body.Contact;
+	db.query(`SELECT Contact,password FROM userprofile WHERE Contact=${Contact}`, (err, result) => {
+		if(result.length===0) {
+			res.send("invalid Credentials")
+		}
+		else {
+			res.send({result,message:"User Credentials"})
 		}
 	})
 })
@@ -35,7 +54,7 @@ app.post('/create', (req, res) => {
 	const WHEN_TO_VISIT = req.body.whenToVisit
 	const Department = req.body.Department ? req.body.Department : 'office'
 	const Contact = req.body.Contact
-	db.query('INSERT INTO users(Last_Name,First_Name,Age,Purpose,statusCode,WHO_ARE_YOU,WHOM_TO_VISIT,WHEN_TO_VISIT,Department,Contact) VALUES(?,?,?,?,?,?,?,?,?,?)', [Last_Name, First_Name, Age, Purpose, statusCode, WHO_ARE_YOU, WHOM_TO_VISIT, WHEN_TO_VISIT, Department, Contact], (err, result) => {
+	db.query('INSERT INTO appointments(Last_Name,First_Name,Age,Purpose,statusCode,WHO_ARE_YOU,WHOM_TO_VISIT,WHEN_TO_VISIT,Department,Contact) VALUES(?,?,?,?,?,?,?,?,?,?)', [Last_Name, First_Name, Age, Purpose, statusCode, WHO_ARE_YOU, WHOM_TO_VISIT, WHEN_TO_VISIT, Department, Contact], (err, result) => {
 		if (err) {
 			console.log(err);
 		} else {
@@ -44,7 +63,7 @@ app.post('/create', (req, res) => {
 	})
 })
 app.get("/appointments", (req, res) => {
-	db.query(`SELECT * FROM users  `, (err, result) => {
+	db.query(`SELECT * FROM appointments  `, (err, result) => {
 		if (err) {
 			console.log(err);
 		} else {
@@ -53,17 +72,17 @@ app.get("/appointments", (req, res) => {
 	});
 });
 app.get("/myorders", (req, res) => {
-	db.query(`SELECT * FROM users WHERE Contact=${req.body.contact} `, (err, result) => {
+	db.query(`SELECT * FROM appointments WHERE Contact=${req.body.contact} `, (err, result) => {
 		if (err) {
 			console.log(err);
 		} else {
-			res.send("your Booked appointments", result);
+			res.send({result,message:"you're booked appointments",success:true});
 		}
 	});
 });
 app.put("/Reject", (req, res) => {
 	const id =
-		db.query(`UPDATE users SET statusCode="2" WHERE Personid=${id} `, (err, result) => {
+		db.query(`UPDATE appointments SET statusCode="2" WHERE Personid=${id} `, (err, result) => {
 			if (err) {
 				console.log(err);
 			} else {
@@ -73,7 +92,7 @@ app.put("/Reject", (req, res) => {
 })
 app.put("/Accept", (req, res) => {
 	const id = req.body.id
-	db.query(`UPDATE users SET statusCode="1" WHERE Personid=${id} `, (err, result) => {
+	db.query(`UPDATE appointments SET statusCode="1" WHERE Personid=${id} `, (err, result) => {
 		if (err) {
 			console.log(err);
 		} else {
