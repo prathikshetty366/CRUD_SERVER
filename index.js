@@ -34,9 +34,9 @@ app.post('/createProfile', (req, res) => {
 })
 app.post('/Login', (req, res) => {
 	const Contact = req.body.Contact;
-	db.query(`SELECT Contact,password FROM userprofile WHERE Contact=${Contact}`, (err, result) => {
-		if (result.length === 0) {
-			res.send("invalid Credentials")
+	db.query(`SELECT * FROM userprofile WHERE Contact=${Contact}`, (err, result) => {
+		if (err) {
+			console.log(err)
 		}
 		else {
 			res.send({ result, message: "User Credentials" })
@@ -72,7 +72,7 @@ app.get("/appointments", (req, res) => {
 	});
 });
 app.get("/myorders", (req, res) => {
-	db.query(`SELECT * FROM appointments WHERE Contact=${req.body.contact} `, (err, result) => {
+	db.query(`SELECT * FROM appointments WHERE Contact=${req.query.contact} `, (err, result) => {
 		if (err) {
 			console.log(err);
 		} else {
@@ -81,7 +81,7 @@ app.get("/myorders", (req, res) => {
 	});
 });
 app.put("/Reject", (req, res) => {
-	const id =
+	const id =req.body.id
 		db.query(`UPDATE appointments SET statusCode="2" WHERE Personid=${id} `, (err, result) => {
 			if (err) {
 				console.log(err);
@@ -103,4 +103,4 @@ app.put("/Accept", (req, res) => {
 const PORT = 3001;
 app.listen(PORT, () => {
 	console.log(`server is running at ${PORT}`);
-})
+})  
