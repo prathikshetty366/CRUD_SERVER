@@ -17,7 +17,7 @@ app.post('/createProfile', (req, res) => {
 	const Contact = req.body.Contact
 	const password = req.body.password
 	db.query(`SELECT Contact FROM userprofile WHERE Contact = ${Contact}`, (err, result) => {
-		if (result.length === 0) {
+		if (!result) {
 			db.query('INSERT INTO userprofile(Last_Name,First_Name,Age,Contact,password) VALUES(?,?,?,?,?)', [Last_Name, First_Name, Age, Contact, password], (err, result) => {
 				if (err) {
 					console.log(err);
