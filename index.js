@@ -22,7 +22,7 @@ app.post('/createProfile', (req, res) => {
 				if (err) {
 					console.log(err);
 				} else {
-					res.send("Profile Created Successfully")
+					res.send({message:"successfully Created Profile"})
 				}
 			})
 		}
@@ -58,7 +58,7 @@ app.post('/create', (req, res) => {
 		if (err) {
 			console.log(err);
 		} else {
-			res.send("successfully Booked Your Appointment")
+			res.send({message:"successfully Booked Your Appointment"})
 		}
 	})
 })
@@ -86,7 +86,7 @@ app.put("/Reject", (req, res) => {
 			if (err) {
 				console.log(err);
 			} else {
-				res.send("Rejected the Request Successfully");
+				res.send({message:"Rejected the Request Successfully"});
 			}
 		});
 })
@@ -96,7 +96,7 @@ app.put("/Accept", (req, res) => {
 		if (err) {
 			console.log(err);
 		} else {
-			res.send("Accepted the Request Successfully");
+			res.send({message:"Accepted the Request Successfully"});
 		}
 	});
 });
