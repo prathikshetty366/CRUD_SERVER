@@ -16,20 +16,24 @@ app.post('/createProfile', (req, res) => {
 	const Age = req.body.Age
 	const Contact = req.body.Contact
 	const password = req.body.password
-	db.query(`SELECT Contact FROM userprofile WHERE Contact = ${Contact}`, (err, result) => {
+	// if(!contact){
+	// 	res.send({message:"please Enter All the details to proceed"})
+	// } 
+	db.query(`SELECT * FROM userprofile WHERE Contact = ${Contact}`, (err, result) => {
 		if (result&&result.length===0) {
 			db.query('INSERT INTO userprofile(Last_Name,First_Name,Age,Contact,password) VALUES(?,?,?,?,?)', [Last_Name, First_Name, Age, Contact, password], (err, result) => {
 				if (err) {
 					console.log(err);
 				} else {
-					res.send({success:true,message:"successfully Created Profile"})
+					res.send({success:true,message:"successfully Created Profile",userCreated:true})
 				}
 			})
 		}
 		else {
-			res.send({ success: true, userExist: true, message: "user already exist ,please redirect login page" })
+			res.send({ success: true, userExist: true, message: result?"user already exist ,please redirect login page":"Please fill the details to proceed" ,Data:result})
 		}
 	})
+
 
 })
 app.post('/Login', (req, res) => {
