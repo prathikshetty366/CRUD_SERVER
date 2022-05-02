@@ -25,12 +25,12 @@ app.post('/createProfile', (req, res) => {
 				if (err) {
 					console.log(err);
 				} else {
-					res.send({success:true,message:"successfully Created Profile",userCreated:true})
+					res.send({success:true,message:"successfully Created Profile",userCreated:true	})
 				}
 			})
 		}
 		else {
-			res.send({ success: true, userExist: true, message: result?"user already exist ,please redirect login page":"Please fill the details to proceed" ,Data:result})
+			res.send({ success: true, message: result?"user already exist ,please redirect login page":"Please fill the details to proceed" ,Data:result})
 		}
 	})
 
