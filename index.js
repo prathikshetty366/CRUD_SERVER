@@ -61,21 +61,24 @@ app.post('/create', (req, res) => {
 		}
 	})
 })
-app.get("/appointments", (req, res) => {
-	db.query(`SELECT * FROM appointments  `, (err, result) => {
-		if (err) {
-			console.log(err);
-		} else {
-			res.send(result);
-		}
-	});
-});
+
 app.get("/myorders", (req, res) => {
 	db.query(`SELECT * FROM appointments WHERE Contact=${req.query.contact} `, (err, result) => {
 		if (err) {
 			console.log(err);
 		} else {
 			res.send({ result, message: "you're booked appointments", success: true });
+		}
+	});
+});
+
+//admins API
+app.get("/appointments", (req, res) => {
+	db.query(`SELECT * FROM appointments  `, (err, result) => {
+		if (err) {
+			console.log(err);
+		} else {
+			res.send(result);
 		}
 	});
 });
