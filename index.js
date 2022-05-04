@@ -72,6 +72,17 @@ app.get("/myorders", (req, res) => {
 	});
 });
 
+app.get("/profile", (req, res) => {
+	db.query(`SELECT * FROM userprofile WHERE Contact=${req.query.contact} `, (err, result) => {
+		if (err) {
+			console.log(err);
+		} else {
+			res.send({data: result, message: "user  profile Details", success: true });
+		}
+	});
+});
+
+
 //admins API
 app.get("/appointments", (req, res) => {
 	db.query(`SELECT * FROM appointments  `, (err, result) => {
