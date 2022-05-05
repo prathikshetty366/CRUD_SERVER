@@ -4,11 +4,14 @@ const mysql = require('mysql')
 const cors = require('cors')
 app.use(cors())
 app.use(express.json())
+const dotenv = require("dotenv");
+dotenv.config();
+
 const db = mysql.createConnection({
-	user: "root",
-	host: "localhost",
-	password: "password",
-	database: "visitor",
+	user: process.env.DB_USER,
+	host: process.env.DB_HOST,
+	password: process.env.DB_PASSWORD,
+	database: process.env.DB_NAME,
 });
 app.post('/createProfile', (req, res) => {
 	const Last_Name = req.body.LastName
@@ -17,17 +20,17 @@ app.post('/createProfile', (req, res) => {
 	const Contact = req.body.Contact
 	const password = req.body.password
 	db.query(`SELECT * FROM userprofile WHERE Contact = ${Contact}`, (err, result) => {
-		if (result&&result.length===0) {
+		if (result && result.length === 0) {
 			db.query('INSERT INTO userprofile(Last_Name,First_Name,Age,Contact,password) VALUES(?,?,?,?,?)', [Last_Name, First_Name, Age, Contact, password], (err, result) => {
 				if (err) {
 					console.log(err);
 				} else {
-					res.send({success:true,message:"successfully Created Profile",userCreated:true	})
+					res.send({ success: true, message: "successfully Created Profile", userCreated: true })
 				}
 			})
 		}
 		else {
-			res.send({ success: true, message: result?"user already exist ,please redirect login page":"Please fill the details to proceed" ,Data:result})
+			res.send({ success: true, message: result ? "user already exist ,please redirect login page" : "Please fill the details to proceed", Data: result })
 		}
 	})
 })
@@ -57,7 +60,7 @@ app.post('/create', (req, res) => {
 		if (err) {
 			console.log(err);
 		} else {
-			res.send({message:"successfully Booked Your Appointment"})
+			res.send({ message: "successfully Booked Your Appointment" })
 		}
 	})
 })
@@ -75,7 +78,7 @@ app.get("/profile", (req, res) => {
 		if (err) {
 			console.log(err);
 		} else {
-			res.send({data: result, message: "user  profile Details", success: true });
+			res.send({ data: result, message: "user  profile Details", success: true });
 		}
 	});
 });
@@ -90,14 +93,14 @@ app.get("/appointments", (req, res) => {
 	});
 });
 app.put("/Reject", (req, res) => {
-	const id =req.body.id
-		db.query(`UPDATE appointments SET statusCode="2" WHERE Personid=${id} `, (err, result) => {
-			if (err) {
-				console.log(err);
-			} else {
-				res.send({message:"Rejected the Request Successfully"});
-			}
-		});
+	const id = req.body.id
+	db.query(`UPDATE appointments SET statusCode="2" WHERE Personid=${id} `, (err, result) => {
+		if (err) {
+			console.log(err);
+		} else {
+			res.send({ message: "Rejected the Request Successfully" });
+		}
+	});
 })
 app.put("/Accept", (req, res) => {
 	const id = req.body.id
@@ -105,7 +108,7 @@ app.put("/Accept", (req, res) => {
 		if (err) {
 			console.log(err);
 		} else {
-			res.send({message:"Accepted the Request Successfully"});
+			res.send({ message: "Accepted the Request Successfully" });
 		}
 	});
 });
