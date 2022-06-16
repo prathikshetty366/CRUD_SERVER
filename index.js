@@ -6,6 +6,16 @@ app.use(cors())
 app.use(express.json())
 const dotenv = require("dotenv");
 dotenv.config();
+const nodemailer=require("nodemailer")
+const nodemailgun=require('nodemailer-mailgun-transport');
+
+const auth={
+	auth:{
+		api_key:'c104e9ea6171a86c1a563f832e94ce6f-50f43e91-a0ed14cc',
+		domain:'sandbox4293efe20d224207a08fabc146761dc1.mailgun.org'
+	}
+};
+let transporter=nodemailer.createTransport(nodemailgun(auth))
 
 const db = mysql.createConnection({
 	user: process.env.DB_USER,
@@ -54,12 +64,29 @@ app.post('/create', (req, res) => {
 	const WHO_ARE_YOU = req.body.whoAreYou
 	const WHOM_TO_VISIT = req.body.whomToVisit
 	const WHEN_TO_VISIT = req.body.whenToVisit
-	const Department = req.body.Department ? req.body.Department : 'office'
+	// const Department = req.body.Department ? req.body.Department : 'office'
 	const Contact = req.body.Contact
-	db.query('INSERT INTO appointments(Last_Name,First_Name,Age,Purpose,statusCode,WHO_ARE_YOU,WHOM_TO_VISIT,WHEN_TO_VISIT,Department,Contact) VALUES(?,?,?,?,?,?,?,?,?,?)', [Last_Name, First_Name, Age, Purpose, statusCode, WHO_ARE_YOU, WHOM_TO_VISIT, WHEN_TO_VISIT, Department, Contact], (err, result) => {
+	const Fac_Contact="1234567890"
+	const Faculty_Name="Initx"
+	const Fac_Email="initxindia@gmail.com"
+	db.query('INSERT INTO appointments(Last_Name,First_Name,Age,Purpose,statusCode,WHO_ARE_YOU,WHOM_TO_VISIT,WHEN_TO_VISIT,Contact,Fac_Name,Fac_Contact,Fac_Email) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)', [Last_Name, First_Name, Age, Purpose, statusCode, WHO_ARE_YOU, WHOM_TO_VISIT, WHEN_TO_VISIT, Contact,Faculty_Name	, Fac_Contact,Fac_Email], (err, result) => {
 		if (err) {
 			console.log(err);
 		} else {
+			// const mailOptions={
+			// 	from:'Appointmentregistration@gmail.com',
+			// 	to:Fac_Email,
+			// 	subject:`You got the Booking Registration from:${First_Name}-${Last_Name}`,
+			// 	text:"Please Check your Appointment List"
+			// }
+			// transporter.sendMail(mailOptions,function(err,data){
+			// 	if(err){
+			// 		console.log(err,"err")
+			// 	}else{
+			// 		console.log("Mail Sent")
+			// 	}
+			// })
+			
 			res.send({ message: "successfully Booked Your Appointment" })
 		}
 	})
@@ -123,9 +150,10 @@ app.post('/createFaculty', (req, res) => {
 	const First_Name = req.body.FirstName
 	const Contact = req.body.Contact
 	const password = req.body.password
+	const Email="initxindia@gmail.com"
 	db.query(`SELECT * FROM facultyprofile WHERE Contact = ${Contact}`, (err, result) => {
 		if (result && result.length === 0) {
-			db.query('INSERT INTO facultyprofile(Last_Name,First_Name,Contact,password) VALUES(?,?,?,?)', [Last_Name, First_Name, Contact, password], (err, result) => {
+			db.query('INSERT INTO facultyprofile(Last_Name,First_Name,Contact,password,Email) VALUES(?,?,?,?,?)', [Last_Name, First_Name, Contact, password,Email], (err, result) => {
 				if (err) {
 					console.log(err);
 				} else {
@@ -150,4 +178,26 @@ app.get("/facLogin", (req, res) => {
 		}
 	});
 });
+//Get Faculty List
+app.get("/faculty", (req, res) => {
+	db.query(`SELECT * FROM facultyprofile `, (err, result) => {
+		if (err) {
+			console.log(err);
+		} else {
+			res.send({ data: result, message: "user  profile Details", success: true });
+		}
+	});
+});
+//Individual faculty Data
+app.get("/facappointments", (req, res) => {
+	db.query(`SELECT * FROM appointments WHERE Fac_Contact=${req.query.contact} `, (err, result) => {
+		if (err) {
+			console.log(err);
+		} else {
+			res.send({ data: result, message: "user  profile Details", success: true });
+		}
+	});
+});
+
+
 //Faculty to see How many request he has call myorder api.
