@@ -83,15 +83,15 @@ app.get("/profile", (req, res) => {
 	});
 });
 //admins API
-app.get("/appointments", (req, res) => {
-	db.query(`SELECT * FROM appointments  `, (err, result) => {
-		if (err) {
-			console.log(err);
-		} else {
-			res.send(result);
-		}
-	});
-});
+// app.get("/appointments", (req, res) => {
+// 	db.query(`SELECT * FROM appointments  `, (err, result) => {
+// 		if (err) {
+// 			console.log(err);
+// 		} else {
+// 			res.send(result);
+// 		}
+// 	});
+// });
 app.put("/Reject", (req, res) => {
 	const id = req.body.id
 	db.query(`UPDATE appointments SET statusCode="2" WHERE Personid=${id} `, (err, result) => {
@@ -116,3 +116,38 @@ const PORT = 3001;
 app.listen(PORT, () => {
 	console.log(`server is running at ${PORT}`);
 })  
+
+//Faculty API
+app.post('/createFaculty', (req, res) => {
+	const Last_Name = req.body.LastName
+	const First_Name = req.body.FirstName
+	const Contact = req.body.Contact
+	const password = req.body.password
+	db.query(`SELECT * FROM facultyprofile WHERE Contact = ${Contact}`, (err, result) => {
+		if (result && result.length === 0) {
+			db.query('INSERT INTO facultyprofile(Last_Name,First_Name,Contact,password) VALUES(?,?,?,?)', [Last_Name, First_Name, Contact, password], (err, result) => {
+				if (err) {
+					console.log(err);
+				} else {
+					res.send({ success: true, message: "successfully Created faculty", FacultyCreated: true })
+				}
+			})
+		}
+		else {
+			res.send({ success: true, message: result ? "Faculty already exist ,please redirect login page" : "Please fill the details to proceed", Data: result })
+		}
+	})
+})
+
+
+//faculty Login
+app.get("/facLogin", (req, res) => {
+	db.query(`SELECT * FROM facultyprofile WHERE Contact=${req.query.contact} `, (err, result) => {
+		if (err) {
+			console.log(err);
+		} else {
+			res.send({ data: result, message: "user  profile Details", success: true });
+		}
+	});
+});
+//Faculty to see How many request he has call myorder api.
